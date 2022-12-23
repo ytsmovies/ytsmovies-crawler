@@ -1,0 +1,534 @@
+{{define "header"}}
+    <div class="d-block d-md-none">
+        <div class="row mgb-header-mobile">
+            <div class="col-3 justify-content-start d-flex">
+                <div style="margin-left: 0px; margin-right: 0;  display: flex;justify-content: center;align-items: center;padding-right: 8px">
+                    <i class="fa fa-bars fa-lg" aria-hidden="true" onclick="openNav()"></i>
+                </div>
+                <div id="mgb-sidebar" class="row mgb-sidebar-base">
+                    <div class="col-9 mgb-sidebar-menu-left">
+                        {{if .IsLoggedIn }}
+                            <div class="row mgb-user-profile-popup-content-header mgb-center-content">
+                                <div class="col-4">
+                                    <img src="{{.AccountAvatarUrl}}"
+                                         style="width: 64px; border-radius: 100px; aspect-ratio: 1/1"/>
+                                </div>
+                                <div class="col-8">
+                                    <div class="mgb-one-line-text">
+                                        {{.AccountName}}
+                                    </div>
+                                    <span class="mgb-user-profile-popup-content-email mgb-one-line-text">
+                                        {{.AccountEmail}}
+                                    </span>
+                                </div>
+                            </div>
+                        {{else}}
+                            <div>
+                                <ul>
+                                    <li><a href="/dang-nhap" class="mgb-sidebar-menu-left-login">Đăng nhập</a></li>
+                                    <li><a href="/dang-ky" class="mgb-sidebar-menu-left-signup">Đăng ký</a></li>
+                                </ul>
+                            </div>
+                        {{end}}
+
+                        <div class="mgb-separator"></div>
+                        <div>
+                            <div class="mgb-sidebar-menu-left-title">
+                                Menu
+                            </div>
+                            <ul>
+                                <li class="mgb-sidebar-menu-left-container">
+                                    <div class="position-relative">
+                                        <span class="mgb-sidebar-menu-left-item-title">Thể Loại</span>
+                                        <i class="fas fa-caret-down fa-lg"
+                                           style="position: absolute; right: 0; top: 0"></i>
+                                    </div>
+                                    <div class="row mgb-sidebar-menu-left-content">
+                                        {{range .TopGenres}}
+                                            <a href="{{.Url}}" class="mgb-sidebar-menu-left-content-item">{{.Name}}</a>
+                                        {{end}}
+                                    </div>
+
+                                </li>
+                                <li class="mgb-sidebar-menu-left-container">
+                                    <div class="position-relative">
+                                        <span class="mgb-sidebar-menu-left-item-title">Xếp hạng</span>
+                                        <i class="fas fa-caret-down fa-lg"
+                                           style="position: absolute; right: 0; top: 0"></i>
+                                    </div>
+                                    <div class="row mgb-sidebar-menu-left-content">
+                                        {{/*                                        <div class="mgb-sidebar-menu-left-content-item">Top thang</div>*/}}
+                                        <a class="mgb-sidebar-menu-left-content-item" href="/xep-hang/top-all">Top
+                                            all</a>
+                                        <a class="mgb-sidebar-menu-left-content-item" href="/xep-hang/top-thang">Top
+                                            tháng</a>
+                                        <a class="mgb-sidebar-menu-left-content-item" href="/xep-hang/top-tuan">Top
+                                            tuần</a>
+                                        <a class="mgb-sidebar-menu-left-content-item" href="/xep-hang/top-ngay">Top
+                                            ngày</a>
+                                        <a class="mgb-sidebar-menu-left-content-item" href="/xep-hang/top-yeu-thich">Top
+                                            yêu
+                                            thích</a>
+                                        <a class="mgb-sidebar-menu-left-content-item" href="/xep-hang/top-doc-sau">Top
+                                            đọc
+                                            sau</a>
+
+                                    </div>
+                                </li>
+                                <li><a href="/truyen-full" class="mgb-sidebar-menu-left-item-title">Đủ Bộ</a></li>
+                                {{range .TopExtendedGenres}}
+                                    <li><a href="{{.Url}}"
+                                           class="mgb-sidebar-menu-left-item-title">{{.AlternateName}}</a></li>
+                                {{end}}
+                                <li><a href="/tim-truyen" class="mgb-sidebar-menu-left-item-title">Tìm Truyện</a></li>
+                                {{if .IsLoggedIn }}
+                                {{else}}
+                                    <li><a href="/lich-su" class="mgb-sidebar-menu-left-item-title">Lịch sử đọc</a></li>
+                                {{end}}
+
+                            </ul>
+                        </div>
+
+                        <div class="mgb-separator"></div>
+                        {{if .IsLoggedIn }}
+                            <div>
+                                <div class="mgb-sidebar-menu-left-title">
+                                    Tài khoản
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-user fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/thong-tin" class="mgb-sidebar-menu-left-item-title">Thông
+                                            tin
+                                            tài khoản</a>
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-history fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/lich-su" class="mgb-sidebar-menu-left-item-title">Lịch
+                                            sử
+                                            đọc</a>
+
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-heart fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/truyen-yeu-thich" class="mgb-sidebar-menu-left-item-title">Truyện
+                                            yêu thích</a>
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-bookmark fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/truyen-doc-sau" class="mgb-sidebar-menu-left-item-title">Truyện
+                                            đọc sau</a>
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-comment fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/binh-luan" class="mgb-sidebar-menu-left-item-title">Bình
+                                            luận</a>
+
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-envelope fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/email-va-lien-ket"
+                                           class="mgb-sidebar-menu-left-item-title">Email & Liên kết</a>
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-lock fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/doi-mat-khau" class="mgb-sidebar-menu-left-item-title">Đổi
+                                            mật
+                                            khẩu</a>
+                                    </div>
+                                </div>
+                                <div class="row mgb-sidebar-menu-left-item-container">
+                                    <div class="col-2">
+                                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                                    </div>
+                                    <div class="col">
+                                        <a href="/nguoi-dung/thoat" class="mgb-sidebar-menu-left-item-title">Thoát</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mgb-separator"></div>
+                        {{else}}
+                        {{end}}
+
+                        <div style="text-align: left; padding: 8px 0 12px 24px">
+                            <a href="/"><img src="/public/resources/img/logo.png" height="28px"/></a>
+                            <div class="mgb-user-profile-popup-content-footer-copyright">© 2022 Mangabit</div>
+
+                        </div>
+                    </div>
+                    <div id="mgb-sidebar-menu-right" class="col mgb-sidebar-menu-right">
+                        <div class="mgb-sidebar-menu-right-close-btn btn" onclick="closeNav()">
+                            <i class="fas fa-times "></i>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="mgb-searchbar" class="row mgb-sidebar-base mgb-sidebar-search">
+                    <div class="col p-0 m-0">
+                        <div class="row mgb-sidebar-search-header">
+                            <div class="col-2">
+                                <i class="fas fa-arrow-left fa-lg" onclick="closeSearchBar()"></i>
+                            </div>
+                            <div class="col">
+                                <input id="mgb-header-desktop-content-search-box-button2"
+                                       class="" type="text" name="q" placeholder="Tìm truyện ..." autocomplete="off"
+                                       oninput="search(this)">
+                            </div>
+                            <div class="col-2">
+                                <i class="fas fa-times fa-lg" onclick="clearSearch()"></i>
+                            </div>
+                        </div>
+                        <div id="mgb-header-desktop-content-search-box-popup-content2"
+                             class="mgb-sidebar-search-header-body">
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-6" style="text-align: center">
+                <a href="/"><img src="/public/resources/img/logo.png" height="28px"/></a>
+            </div>
+            <div class="col-3 justify-content-end d-flex">
+                <div class="mgb-center-content" style="padding-right: 8px">
+                    <i class="fa fa-search fa-lg" aria-hidden="true" onclick="openSearchBar()"></i>
+                    <span style="padding: 0 8px"></span>
+                    <a href="/mobile"><i class="fa fa-download fa-lg" style="color: #1db954"></i></a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="mgb-header-desktop d-none d-md-block">
+        <div class="row mgb-header-desktop-content" onmouseover="hideMainMenu(this); hideMainMenu2(this)">
+            <div class="col-auto" style="  margin: auto;">
+                <a href="/"><img src="/public/resources/img/logo.png" height="28px"/></a>
+            </div>
+
+            <div class="col position-relative mgb-header-desktop-content-search-box">
+                <input id="mgb-header-desktop-content-search-box-button" class="mgb-search-button-normal top-left-right"
+                       type="text" name="q" placeholder="Tìm truyện ..." autocomplete="off"
+                       onfocus="showSearchContent(this)" oninput="search(this)"/>
+                <div id="mgb-header-desktop-content-search-box-popup"
+                     class="mgb-header-desktop-content-search-box-popup left-right-bottom">
+                    <div id="mgb-header-desktop-content-search-box-popup-content">
+
+                    </div>
+                    <div style="text-align: right; padding: 8px 0 8px 24px">
+                        <span style="font-size: 11px; font-family: 'Segoe UI'; padding-right: 4px"> tìm kiếm bằng </span>
+                        <a href="/"><img src="/public/resources/img/logo.png" height="14px"/></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-auto p-0 justify-content-end d-flex mgb-center-content">
+                <a href="/mobile" style="text-decoration: none; color: #1c1d1f">
+                    <i class="fas fa-download fa-lg" style="color: #1db954"></i>
+                    <span class="mgb-header-download-app">Tải app</span>
+                </a>
+
+                <div class="mgb-center-content">
+                    {{if .IsLoggedIn }}
+                        <div id="mgb-auth-box2" class="mgb-auth-box2 position-relative">
+                            <img src="{{.AccountAvatarUrl}}" style="width: 36px;border-radius: 100px; aspect-ratio: 1/1">
+                            <div class="mgb-user-profile-popup">
+                                <div class="mgb-user-profile-popup-content">
+                                    <div class="row mgb-user-profile-popup-content-header mgb-center-content">
+                                        <div class="col-4">
+                                            <img src="{{.AccountAvatarUrl}}"
+                                                 style="width: 64px; border-radius: 100px; aspect-ratio: 1/1"/>
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="mgb-one-line-text">
+
+                                                {{.AccountName}}
+                                            </div>
+                                            <span class="mgb-user-profile-popup-content-email mgb-one-line-text">
+                                                {{.AccountEmail}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mgb-separator"></div>
+                                    <div class="mgb-user-profile-popup-content-menu">
+                                        <div class="mgb-user-profile-popup-content-menu-title">
+                                            Tài khoản
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-user fa-lg"></i>
+                                            </div>
+
+                                            <a href="/nguoi-dung/thong-tin"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Thông
+                                                tin tài khoản</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-history fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/lich-su"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Lịch sử
+                                                đọc</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-heart fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/truyen-yeu-thich"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Truyện
+                                                yêu thích</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-bookmark fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/truyen-doc-sau"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Truyện
+                                                đọc sau</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-comment fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/binh-luan"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Bình
+                                                luận</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-envelope fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/email-va-lien-ket"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Email & Liên
+                                                kết</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-lock fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/doi-mat-khau"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Đổi mật
+                                                khẩu</a>
+                                        </div>
+                                        <div class="row mgb-user-profile-popup-content-menu-content">
+                                            <div class="col-2">
+                                                <i class="fas fa-sign-out-alt fa-lg"></i>
+                                            </div>
+                                            <a href="/nguoi-dung/thoat"
+                                               class="col mgb-user-profile-popup-content-menu-content-item">Thoát</a>
+                                        </div>
+                                    </div>
+                                    <div class="mgb-separator"></div>
+                                    <div class="mgb-user-profile-popup-content-footer">
+                                        <a href="/"><img src="/public/resources/img/logo.png" height="28px"/></a>
+                                        <div class="mgb-user-profile-popup-content-footer-copyright">© 2022 Mangabit
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{else}}
+                        <div id="mgb-auth-box">
+                            <a href="/dang-nhap" class="mgb-header-button mgb-header-login-button">Đăng nhập</a>
+                            <a href="/dang-ky" class="mgb-header-button mgb-header-signup-button">Đăng ký</a>
+                        </div>
+                    {{end}}
+
+
+                </div>
+
+            </div>
+        </div>
+        <div id="mgb-header-desktop-main-menu-container" class="row mgb-header-desktop-main-menu-container"
+             onclick="hideSearchContent(this)">
+            <div class="col mgb-header-desktop-main-menu-content">
+                <div class="row mgb-header-desktop-main-menu-body">
+                    <div class="col p-0">
+                        <div class="mgb-main-menu-nav-item" onmouseover="hideMainMenu(this); hideMainMenu2(this)">
+                            <a href="/" class="mgb-main-menu-nav-button">
+                                <i class="fa fa-home fa-1x"></i>
+                            </a>
+                        </div>
+                        <div class="mgb-main-menu-nav-item" onmouseover="showMainMenu(this)">
+                            <div class="mgb-main-menu-nav-button">
+                                <span style="">Thể Loại</span>
+                                <i class="fa fa-caret-down fa-1x"></i>
+                            </div>
+
+                        </div>
+                        <div class="mgb-main-menu-nav-item" onmouseover="showMainMenu2(this)">
+                            <div class="mgb-main-menu-nav-button">
+                                <i class="fa fa-chart-bar fa-sm"></i>
+                                <span style="">Xếp Hạng</span>
+                                <i class="fa fa-caret-down fa-1x"></i>
+                            </div>
+                        </div>
+
+                        <div class="mgb-main-menu-nav-item" onmouseover="hideMainMenu(this); hideMainMenu2(this)">
+                            <a href="/truyen-full" class="mgb-main-menu-nav-button">
+                                Đủ Bộ
+                            </a>
+                        </div>
+
+                        {{range .TopExtendedGenres}}
+                            <div class="mgb-main-menu-nav-item" onmouseover="hideMainMenu(this); hideMainMenu2(this)">
+                                <a href="{{.Url}}" class="mgb-main-menu-nav-button">
+                                    {{.AlternateName}}
+                                </a>
+                            </div>
+                        {{end}}
+
+                        <div class="mgb-main-menu-nav-item" onmouseover="hideMainMenu(this); hideMainMenu2(this)">
+                            <a href="/tim-truyen" class="mgb-main-menu-nav-button">
+                                Tìm Truyện
+                            </a>
+                        </div>
+                        <div class="mgb-main-menu-nav-item" onmouseover="hideMainMenu(this); hideMainMenu2(this)">
+                            {{if .IsLoggedIn }}
+                                <a href="/nguoi-dung/lich-su" class="mgb-main-menu-nav-button">
+                                    <i class="fas fa-history fa-sm"></i>
+                                    <span>
+                                    Lịch Sử
+                                </span>
+                                </a>
+                            {{else}}
+                                <a href="/lich-su" class="mgb-main-menu-nav-button">
+                                    <i class="fas fa-history fa-sm"></i>
+                                    <span>
+                                    Lịch Sử
+                                </span>
+                                </a>
+                            {{end}}
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row position-relative">
+                    <div id="mgb-main-menu-popup" class="col mgb-main-menu-popup-content w-100">
+                        <ul class="">
+                            {{range .TopGenres}}
+                                <li><a href="{{.Url}}">{{.Name}}</a></li>
+                            {{end}}
+                        </ul>
+                    </div>
+                    <div id="mgb-main-menu-popup2" class="col mgb-main-menu-popup-content w-100">
+                        <ul class="">
+                            <li><a href="/xep-hang/top-all">Top all</a></li>
+                            <li><a href="/xep-hang/top-thang">Top tháng</a></li>
+                            <li><a href="/xep-hang/top-tuan">Top tuần</a></li>
+                            <li><a href="/xep-hang/top-ngay">Top ngày</a></li>
+                            <li><a href="#">&nbsp;</a></li>
+                            <li><a href="/xep-hang/top-yeu-thich">Top yêu thích</a></li>
+                            <li><a href="/xep-hang/top-doc-sau">Top đọc sau</a></li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search item template -->
+    <template id="searchItemTemplate">
+        <div class="row mgb-plugin-history-item-box hhover">
+            <div class="col-auto">
+                <a id="tplImageLink" href="#">
+                    <img id="tplLogo" src="/public/resources/img/st2.jpg" class="mgb-story-card-img-box2"/>
+                </a>
+            </div>
+            <div class="col">
+                <div class="">
+                    <a id="tplName" href="#" class="mgb-plugin-history-item-title">Nguyên Lai Ta dLà Tu Tiên Đại Lão</a>
+                </div>
+                <div id="tplChapters" class="">
+                    <a href="#" class="mgb-plugin-history-item-chapter">Chương 1000</a>
+                </div>
+            </div>
+            <div class="col-3 ">
+                <div class="row" style="display: flex;justify-content: center;align-items: center">
+
+                    <div id="tplViews" class="col-9 d-flex justify-content-end"
+                         style="color: #524A4E; font-size: 12px; padding: 0">
+                        34.567.251
+                    </div>
+                    <div class="col-3 " style="text-align: center; color: #524A4E; padding: 0">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+                <div class="row" style="display: flex;justify-content: center;align-items: center">
+
+                    <div id="tplLikes" class="col-9 d-flex justify-content-end"
+                         style="color: #524A4E; font-size: 12px; padding: 0">
+                        34.567
+                    </div>
+                    <div class="col-3 " style="text-align: center; color: #524A4E; padding: 0">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                </div>
+                <div class="row" style="display: flex;justify-content: center;align-items: center">
+
+                    <div id="tplBookmarks" class="col-9 d-flex justify-content-end"
+                         style="color: #524A4E; font-size: 12px; padding: 0">
+                        34.567
+                    </div>
+                    <div class="col-3 " style="text-align: center; color: #524A4E; padding: 0">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="searchItemTemplate2">
+        <div class="row" style="margin: 10px; padding: 0">
+            <div class="col-auto">
+                <a id="tplImageLink" href="#">
+                    <img id="tplLogo" src="/public/resources/img/st2.jpg" class="mgb-story-card-img-box2"/>
+                </a>
+            </div>
+            <div class="col">
+                <div class="">
+                    <a id="tplName" href="#" class="mgb-plugin-history-item-title">Nguyên Lai Ta Là Tu Tiên Đại
+                        Lão</a>
+                </div>
+                <div id="tplChapters" class="">
+                    <a href="#" class="mgb-plugin-history-item-chapter">Chương 1000</a>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="searchItemTemplate3">
+        <a id="tplName" href="#" class="mgb-plugin-history-item-chapter">Chương 1000</a>
+    </template>
+{{end}}

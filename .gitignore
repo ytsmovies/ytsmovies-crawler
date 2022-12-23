@@ -1,0 +1,7 @@
+/.project
+
+.project
+_generated
+go/pkg
+.idea
+scripts/__pycache__/

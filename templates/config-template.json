@@ -1,0 +1,8 @@
+{
+  "app_port": "20005",
+  "max_worker": 100,
+  "db_template_name": "db-template.db",
+  "db_log_name": "log.db",
+  "db_name": "yts.db",
+  "api_endpoint": "https://yts.mx/api/v2"
+}

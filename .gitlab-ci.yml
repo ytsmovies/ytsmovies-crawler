@@ -1,0 +1,39 @@
+#Mangabit pipeline
+# 3 pipeline: production, stage, dev
+
+image: 7perl/build-packs:golang-v1.0.0
+
+stages:
+  - production
+  - stage
+  - dev
+
+production:
+  stage: production
+  script:
+    - ./ci/scripts/ci.sh
+  only:
+    - master
+
+stage:
+  stage: stage
+  script:
+    - ./ci/scripts/ci-stage.sh
+  only:
+    - dev    
+
+dev:
+  stage: dev
+  #tags:
+    #- aws
+  services:
+    - docker:19.03.5-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""  
+    DOCKER_DRIVER: overlay2
+  script:
+    - chmod 740 .ci/scripts/ci-dev.sh
+    - .ci/scripts/ci-dev.sh $CI_PROJECT_DIR
+  only:
+    - feature/v1        
