@@ -24,7 +24,8 @@ var SQL_INSERT_MOVIE = `insert into MOVIE(id, url, imdb_code, title, title_engli
 								?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
 								?, ?, ?)`
 var SQL_INSERT_CAST = `insert into CAST(id, name, url_image) values(?, ?, ?)`
-
+var SQL_INSERT_CASTING = `insert into CASTING(cast_id, movie_id, character_name) values(?, ?, ?)`
+var SQL_INSERT_MOVIE_GENRE = `insert into MOVIE_GENRE(movie_id, genre_id) values(?, ?)`
 var SQL_INSERT_LANGUAGE = `insert into LANGUAGE(id) values(?)`
 var SQL_INSERT_TORRENT = `insert into TORRENT(id, url, quality, media_type, seed, peer, size, date_uploaded, movie_id) 
 						values(?, ?, ?, ?, ?, ?, ?, ?, ?)`

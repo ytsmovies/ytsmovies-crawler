@@ -262,24 +262,36 @@ func getMovieDetails(movieIds *hashset.Set, genres *linkedhashmap.Map, casts *li
 					int(year), int(rating), int(runtime), int(downloadCount), int(likeCount),
 					descriptionIntro, descriptionFull, ytTrailerCode, lang, mpaRating,
 					coverImage, backgroundImage, screenshotImage1, screenshotImage2, screenshotImage3, dateUploaded,
-					nil, nil, torrents)
+					singlylinkedlist.New(), singlylinkedlist.New(), torrents)
 				movies.Put(mv.Id, mv)
 
 				//Genres
 				gjson.Get(str, "data.movie.genres").ForEach(func(key, value gjson.Result) bool {
-					if _, found := genres.Get(value.String()); !found {
-						genres.Put(value.String(), model.NewGenre(value.String(), ""))
+					var genre *model.Genre
+					if v, found := genres.Get(value.String()); !found {
+						genre = model.NewGenre(value.String(), "")
+						genres.Put(value.String(), genre)
+					} else {
+						genre = v.(*model.Genre)
 					}
+					mv.Genres.Add(genre)
 
 					return true
 				})
 
 				//Casts
 				gjson.Get(str, "data.movie.cast").ForEach(func(key, value gjson.Result) bool {
-					if _, found := casts.Get(value.Get("imdb_code").String()); !found {
-						casts.Put(value.Get("imdb_code").String(), model.NewCast(value.Get("imdb_code").String(),
-							value.Get("name").String(), value.Get("url_small_image").String()))
+					var cast *model.Cast
+					var casting *model.Casting
+					if v, found := casts.Get(value.Get("imdb_code").String()); !found {
+						cast = model.NewCast(value.Get("imdb_code").String(),
+							value.Get("name").String(), value.Get("url_small_image").String())
+						casts.Put(value.Get("imdb_code").String(), cast)
+					} else {
+						cast = v.(*model.Cast)
 					}
+					casting = model.NewCasting(cast, value.Get("character_name").String())
+					mv.Castings.Add(casting)
 
 					return true
 				})
@@ -341,6 +353,20 @@ func writeToDb(movies *linkedhashmap.Map, genres *linkedhashmap.Map, casts *link
 			tor := value.(*model.Torrent)
 			dal.ExecuteSQLWithTransaction(tx, models.SQL_INSERT_TORRENT,
 				tor.Id, tor.Url, tor.Quality, tor.MediaType, tor.Seed, tor.Peer, tor.Size, tor.DateUploaded, movie.Id)
+		})
+
+		//Insert genres
+		movie.Genres.Each(func(index int, value interface{}) {
+			genre := value.(*model.Genre)
+			dal.ExecuteSQLWithTransaction(tx, models.SQL_INSERT_MOVIE_GENRE,
+				movie.Id, genre.Id)
+		})
+
+		//Insert castings
+		movie.Castings.Each(func(index int, value interface{}) {
+			casting := value.(*model.Casting)
+			dal.ExecuteSQLWithTransaction(tx, models.SQL_INSERT_CASTING,
+				casting.Cast.Id, movie.Id, casting.CharacterName)
 		})
 	})
 
