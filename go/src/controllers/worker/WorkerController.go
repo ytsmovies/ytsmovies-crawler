@@ -70,15 +70,15 @@ func detachSession() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Utils
 
-func BuildPagePath(page int) string {
-	urlTpl := "https://yts.mx/api/v2/list_movies.json?limit=%d&page=%d"
-	endpoint := fmt.Sprintf(urlTpl, 50, page)
+func BuildPagePath(limit int, page int) string {
+	urlTpl := models.AppConfig.ApiEndpoint + "/list_movies.json?limit=%d&page=%d"
+	endpoint := fmt.Sprintf(urlTpl, limit, page)
 	//fmt.Println(url)
 	return endpoint
 }
 
 func BuildPagePath2(movieId int) string {
-	urlTpl := "https://yts.mx/api/v2/movie_details.json?movie_id=%d&with_images=true&with_cast=true"
+	urlTpl := models.AppConfig.ApiEndpoint + "/movie_details.json?movie_id=%d&with_images=true&with_cast=true"
 	endpoint := fmt.Sprintf(urlTpl, movieId)
 	//fmt.Println(url)
 	return endpoint
@@ -94,7 +94,7 @@ func GetDataFromUrl(urlPage string, c chan string) {
 func getMovieCount() int64 {
 	var movieCount int64
 	client := resty.New()
-	resp, err := client.R().Get("https://yts.mx/api/v2/list_movies.json")
+	resp, err := client.R().Get(models.AppConfig.ApiEndpoint + "/list_movies.json")
 
 	if err != nil {
 		movieCount = 0
@@ -116,7 +116,7 @@ func getTotalMovieIds() *hashset.Set {
 	movieCount := getMovieCount()
 	utils.WriteLog(movieCount)
 
-	itemPerPage := 50
+	itemPerPage := models.AppConfig.ItemPerPage
 	totalPages := int(math.Ceil(float64(movieCount) / float64(itemPerPage)))
 	utils.WriteLog(totalPages)
 
@@ -137,7 +137,7 @@ func getTotalMovieIds() *hashset.Set {
 	for !queue.IsEmpty() && runningWorker < models.AppConfig.MaxWorker {
 		//fmt.Println("Created story worker.")
 		item := queue.Pop().(int)
-		go GetDataFromUrl(BuildPagePath(item), movieChan)
+		go GetDataFromUrl(BuildPagePath(itemPerPage, item), movieChan)
 		runningWorker++
 	}
 
@@ -163,7 +163,7 @@ func getTotalMovieIds() *hashset.Set {
 			if !queue.IsEmpty() {
 				item := queue.Pop().(int)
 				runningWorker++
-				go GetDataFromUrl(BuildPagePath(item), movieChan)
+				go GetDataFromUrl(BuildPagePath(itemPerPage, item), movieChan)
 			}
 		default:
 			if runningWorker == 0 && queue.IsEmpty() {
@@ -404,7 +404,7 @@ func Crawl(w chan string) {
 	endTime := time.Since(startTime)
 	utils.WriteLog("Running time: ", endTime.Seconds(), "s")
 
-	time.Sleep(30 * time.Second)
+	time.Sleep(time.Duration(models.AppConfig.TimeToSleep) * time.Second)
 	w <- "yts--------"
 }
 
@@ -419,7 +419,13 @@ func Run() {
 		select {
 		case r1 := <-ytsChan:
 			fmt.Println(r1)
-			go Crawl(ytsChan)
+			if models.AppConfig.RepeatCrawling {
+				go Crawl(ytsChan)
+			}
+		}
+
+		if !models.AppConfig.RepeatCrawling {
+			break
 		}
 	}
 }

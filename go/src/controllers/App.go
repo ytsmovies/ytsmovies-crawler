@@ -37,13 +37,15 @@ func LoadConfig() {
 	appPort := gjson.Get(string(data), "app_port").String()
 	maxWorker := gjson.Get(string(data), "max_worker").Int()
 	repeatCrawling := gjson.Get(string(data), "repeat_crawling").Bool()
+	timeToSleep := gjson.Get(string(data), "time_to_sleep").Int()
 	dbTemplateName := gjson.Get(string(data), "db_template_name").String()
 	dbLogName := gjson.Get(string(data), "db_log_name").String()
 	dbName := gjson.Get(string(data), "db_name").String()
 	apiEndpoint := gjson.Get(string(data), "api_endpoint").String()
+	itemPerPage := gjson.Get(string(data), "item_per_page").Int()
 
-	models.AppConfig = model.NewAppConfig(appPort, int(maxWorker), repeatCrawling,
-		dbTemplateName, dbLogName, dbName, apiEndpoint)
+	models.AppConfig = model.NewAppConfig(appPort, int(maxWorker), repeatCrawling, int(timeToSleep),
+		dbTemplateName, dbLogName, dbName, apiEndpoint, int(itemPerPage))
 
 	utils.WriteLog("Loaded config file: ", models.AppConfigName, models.AppConfig)
 
