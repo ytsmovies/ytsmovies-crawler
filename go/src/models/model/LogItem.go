@@ -1,18 +1,13 @@
 package model
 
 type LogItem struct {
-    Id           string
-    StartTime    int64
-    EndTime      int64
-    RunningTime  int64
-    TotalStories int
-    TotalChapter int
-    SiteType     int
+	Id          string
+	StartTime   int64
+	EndTime     int64
+	RunningTime int64
+	TotalMovies int
 }
 
-func NewLogItem(id string, startTime int64, endTime int64, runningTime int64, totalStories int, totalChapter int, siteType int) *LogItem {
-    return &LogItem{Id: id, StartTime: startTime, EndTime: endTime, RunningTime: runningTime, TotalStories: totalStories, TotalChapter: totalChapter, SiteType: siteType}
+func NewLogItem(id string, startTime int64, endTime int64, runningTime int64, totalMovies int) *LogItem {
+	return &LogItem{Id: id, StartTime: startTime, EndTime: endTime, RunningTime: runningTime, TotalMovies: totalMovies}
 }
-
-//0 - blogtruyen
-//1 - nettruyen

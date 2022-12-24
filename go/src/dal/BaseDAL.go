@@ -9,7 +9,7 @@ import (
 )
 
 func LogCrawler(Db *sql.DB, item *model.LogItem) {
-	ExecuteSQL(Db, models.SQL_LOG_ITEM, item.Id, item.StartTime, item.EndTime, item.RunningTime, item.TotalStories, item.TotalChapter, item.SiteType)
+	ExecuteSQL(Db, models.SQL_LOG_ITEM, item.Id, item.StartTime, item.EndTime, item.RunningTime, item.TotalMovies)
 }
 
 ///////////////////////////////////////////////////////////////////

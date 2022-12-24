@@ -7,6 +7,7 @@ import (
 	"github.com/emirpasic/gods/maps/linkedhashmap"
 	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/go-resty/resty/v2"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/schollz/progressbar/v3"
 	"github.com/tidwall/gjson"
 	"io/ioutil"
@@ -48,15 +49,15 @@ func initWorker() {
 
 func initDatabase() {
 	var err error
-	DbConnection, err = sql.Open("sqlite3", filepath.ToSlash("data/"+DbNameTmp))
+	AppDbConnection, err = sql.Open("sqlite3", filepath.ToSlash("data/"+DbNameTmp))
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println("Connected db: " + DbNameTmp)
+	fmt.Println("Connected app db: " + DbNameTmp)
 }
 
 func closeDb() {
-	DbConnection.Close()
+	AppDbConnection.Close()
 }
 
 func detachSession() {
@@ -70,14 +71,14 @@ func detachSession() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Utils
 
-func BuildPagePath(limit int, page int) string {
+func buildMovieCountUrl(limit int, page int) string {
 	urlTpl := models.AppConfig.ApiEndpoint + "/list_movies.json?limit=%d&page=%d"
 	endpoint := fmt.Sprintf(urlTpl, limit, page)
 	//fmt.Println(url)
 	return endpoint
 }
 
-func BuildPagePath2(movieId int) string {
+func buildMovieDetailUrl(movieId int) string {
 	urlTpl := models.AppConfig.ApiEndpoint + "/movie_details.json?movie_id=%d&with_images=true&with_cast=true"
 	endpoint := fmt.Sprintf(urlTpl, movieId)
 	//fmt.Println(url)
@@ -87,7 +88,7 @@ func BuildPagePath2(movieId int) string {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Implement feature
 
-func GetDataFromUrl(urlPage string, c chan string) {
+func getDataFromUrl(urlPage string, c chan string) {
 	c <- utils.MakeRequest(models.HttpClient, urlPage, http.MethodGet, nil, nil)
 }
 
@@ -137,7 +138,7 @@ func getTotalMovieIds() *hashset.Set {
 	for !queue.IsEmpty() && runningWorker < models.AppConfig.MaxWorker {
 		//fmt.Println("Created story worker.")
 		item := queue.Pop().(int)
-		go GetDataFromUrl(BuildPagePath(itemPerPage, item), movieChan)
+		go getDataFromUrl(buildMovieCountUrl(itemPerPage, item), movieChan)
 		runningWorker++
 	}
 
@@ -163,7 +164,7 @@ func getTotalMovieIds() *hashset.Set {
 			if !queue.IsEmpty() {
 				item := queue.Pop().(int)
 				runningWorker++
-				go GetDataFromUrl(BuildPagePath(itemPerPage, item), movieChan)
+				go getDataFromUrl(buildMovieCountUrl(itemPerPage, item), movieChan)
 			}
 		default:
 			if runningWorker == 0 && queue.IsEmpty() {
@@ -186,10 +187,6 @@ func getMovieDetails(movieIds *hashset.Set, genres *linkedhashmap.Map, casts *li
 		queue.Push(v)
 	}
 
-	//queue.Push(1)
-	//queue.Push(2)
-	//queue.Push(3)
-
 	bar := progressbar.Default(int64(movieIds.Size()))
 
 	//2. Share jobs to workers
@@ -199,7 +196,7 @@ func getMovieDetails(movieIds *hashset.Set, genres *linkedhashmap.Map, casts *li
 	for !queue.IsEmpty() && runningWorker < models.AppConfig.MaxWorker {
 		//fmt.Println("Created movie worker.")
 		item := queue.Pop().(int)
-		go GetDataFromUrl(BuildPagePath2(item), movieChan)
+		go getDataFromUrl(buildMovieDetailUrl(item), movieChan)
 		runningWorker++
 	}
 
@@ -306,7 +303,7 @@ func getMovieDetails(movieIds *hashset.Set, genres *linkedhashmap.Map, casts *li
 			if !queue.IsEmpty() {
 				item := queue.Pop().(int)
 				runningWorker++
-				go GetDataFromUrl(BuildPagePath2(item), movieChan)
+				go getDataFromUrl(buildMovieDetailUrl(item), movieChan)
 			}
 		default:
 			if runningWorker == 0 && queue.IsEmpty() {
@@ -319,7 +316,7 @@ func getMovieDetails(movieIds *hashset.Set, genres *linkedhashmap.Map, casts *li
 }
 
 func writeToDb(movies *linkedhashmap.Map, genres *linkedhashmap.Map, casts *linkedhashmap.Map, langs *linkedhashmap.Map) {
-	tx, err := DbConnection.Begin()
+	tx, err := AppDbConnection.Begin()
 
 	genres.Each(func(key interface{}, value interface{}) {
 		genre := value.(*model.Genre)
@@ -376,7 +373,7 @@ func writeToDb(movies *linkedhashmap.Map, genres *linkedhashmap.Map, casts *link
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var DbNameTmp = ""
-var DbConnection *sql.DB
+var AppDbConnection *sql.DB
 
 func Crawl(w chan string) {
 	startTime := time.Now()
@@ -403,6 +400,9 @@ func Crawl(w chan string) {
 
 	endTime := time.Since(startTime)
 	utils.WriteLog("Running time: ", endTime.Seconds(), "s")
+
+	dal.LogCrawler(models.LogDbConnection, model.NewLogItem(shortuuid.New(),
+		startTime.Unix(), time.Now().Unix(), int64(endTime.Seconds()), movies.Size()))
 
 	time.Sleep(time.Duration(models.AppConfig.TimeToSleep) * time.Second)
 	w <- "yts--------"

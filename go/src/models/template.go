@@ -1,6 +1,6 @@
 package models
 
-var SQL_LOG_ITEM = "insert into LOG(id, start_time, end_time, running_time, total_stories, total_chapters, site_type) values(?, ?, ?, ?, ?, ?, ?)"
+var SQL_LOG_ITEM = `insert into LOG(id, start_time, end_time, running_time, total_movies) values(?, ?, ?, ?, ?)`
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Core

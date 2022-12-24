@@ -75,7 +75,7 @@ func InitDatabase() {
 		fmt.Println(err.Error())
 	}
 
-	models.AppDatabaseConnection = connection
+	models.LogDbConnection = connection
 
 	fmt.Println("Connected log db: " + filepath.ToSlash("data/"+models.AppConfig.DbLogName))
 }
